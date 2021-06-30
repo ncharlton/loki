@@ -1,0 +1,49 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAJL9CYvv3mFciPtchv_Wz9ggMwu7IJf0U&callback=initMap">
+    </script>
+    <script>
+        function initMap() {
+            // The location of Uluru
+            var uluru = {
+                lat: 52.520008,
+                lng: 13.404954
+            };
+            // The map, centered at Uluru
+            var map = new google.maps.Map(
+                document.getElementById('map'), {
+                    zoom: 4,
+                    center: uluru
+                });
+
+            let coordinates = JSON.parse('{{ coordinates | json_encode | raw }}');
+            console.log(coordinates);
+            if (coordinates.length > 0) {
+                coordinates.forEach((c) => {
+                    console.log(c);
+                    new google.maps.Marker({
+                        position: c,
+                        map: map
+                    })
+                })
+            }
+
+            // The marker, positioned at Uluru
+            var marker = new google.maps.Marker({
+                position: uluru,
+                map: map
+            });
+        }
+    </script>
+</head>
+<body>
+<main>
+    <div id="map" data-coordinates="{{ coordinates | json_encode }}" style="width: 100%; height: 1000px;"></div>
+</main>
+</body>
+</html>
+
+
