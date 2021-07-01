@@ -14,7 +14,6 @@ let twing = new TwingEnvironment(loader);
 
 const app = express();
 
-
 // dataset
 // mode:
 // 0 = straight travel looking for magnet;
@@ -214,9 +213,6 @@ async function go() {
                 }
             }
 
-            console.log(direction);
-            console.log(i);
-
             i++;
         }
 
@@ -226,7 +222,6 @@ async function go() {
 
         // Update control values for api
         data.rover = rover.getControl();
-
 
         await sleep(100);
     }
