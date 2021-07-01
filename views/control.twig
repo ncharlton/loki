@@ -121,6 +121,15 @@
                         changeOutput(data.message);
                     })
                 });
+
+                $("#speeds").click(function() {
+                    var turningSpeed = $("#turning-speed").val();
+                    var drivingSpeed = $("#driving-speed").val();
+
+                    $.get('/speeds/' + turningSpeed + '/' + drivingSpeed, function (data) {
+                        changeOutput(data.message);
+                    })
+                });
             })
         </script>
     </head>
@@ -133,6 +142,11 @@
             </div>
             <div>
                 <input id="magnet-value" value="800" type="text"><button id="magnet">Set magnet strength</button>
+            </div>
+            <div>
+                Turning Speed: <input id="turning-speed" value="170" type="text">
+                Driving Speed: <input id="driving-speed" value="200" type="text">
+                <button type="button" id="speeds">Set Speeds</button>
             </div>
             <div>
                 Forward: <input id="ticks-forward" value="30" type="text"> <br>
@@ -174,6 +188,8 @@
                 <p>Forward: ${ticks.forward}</p>
                 <p>Left: ${ticks.left}</p>
                 <p>Right: ${ticks.right}</p>
+                <p>Turning Speed: ${speed.turning}</p>
+                <p>Driving Speed: ${speed.driving}</p>
             </script>
             <div id="rover-data" class="prettyprint"></div>
         </fieldset>

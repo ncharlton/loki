@@ -1,10 +1,8 @@
 import pigpio, { Gpio } from 'pigpio';
-const DRIVING_SPEED = 170;
-const TURNING_SPEED = 200;
 const STOP_SPEED = 0;
 
 class Rover {
-    constructor() {
+    constructor(turningSpeed, drivingSpeed) {
         this.drivingSpeed = 0;
         pigpio.terminate();
         this.leftForward = new Gpio(26, { mode: Gpio.OUTPUT });
@@ -13,6 +11,13 @@ class Rover {
         this.rightBackward = new Gpio(17, { mode: Gpio.OUTPUT });
         this.currentThrottle = 0;
         this.currentDirection = null;
+
+        this.setSpeeds(turningSpeed, drivingSpeed)
+    }
+
+    setSpeeds(turningSpeed, drivingSpeed) {
+        this.turningSpeed = turningSpeed;
+        this.drivingSpeed = drivingSpeed;
     }
 
     turnLeft() {
@@ -22,46 +27,46 @@ class Rover {
         this.leftBackward.pwmWrite(0);
 
         // right go
-        this.rightForward.pwmWrite(TURNING_SPEED);
+        this.rightForward.pwmWrite(this.turningSpeed);
         this.rightBackward.pwmWrite(0);
 
-        this.currentThrottle = DRIVING_SPEED;
+        this.currentThrottle = this.drivingSpeed;
         this.currentDirection = 'left';
     }
 
     turnRight() {
         // left go
-        this.leftForward.pwmWrite(TURNING_SPEED);
+        this.leftForward.pwmWrite(this.turningSpeed);
         this.leftBackward.pwmWrite(STOP_SPEED);
 
         // right stop
         this.rightForward.pwmWrite(STOP_SPEED);
         this.rightBackward.pwmWrite(STOP_SPEED);
 
-        this.currentThrottle = DRIVING_SPEED;
+        this.currentThrottle = this.drivingSpeed;
         this.currentDirection = 'right';
     }
 
     forwards() {
         // start both
-        this.leftForward.pwmWrite(DRIVING_SPEED);
+        this.leftForward.pwmWrite(this.drivingSpeed);
         this.leftBackward.pwmWrite(STOP_SPEED);
-        this.rightForward.pwmWrite(DRIVING_SPEED);
+        this.rightForward.pwmWrite(this.drivingSpeed);
         this.rightBackward.pwmWrite(STOP_SPEED);
 
-        this.currentThrottle = DRIVING_SPEED;
+        this.currentThrottle = this.drivingSpeed;
         this.currentDirection = 'forwards';
     }
 
     backwards() {
-        // start both backwards
-        //this.leftForward.pwmWrite(STOP_SPEED);
-        //this.leftBackward.pwmWrite(DRIVING_SPEED);
-        this.rightForward.pwmWrite(0);
-        this.rightBackward.pwmWrite(250);
-
-        this.currentThrottle = DRIVING_SPEED;
-        this.currentDirection = 'backwards';
+        // // start both backwards
+        // //this.leftForward.pwmWrite(STOP_SPEED);
+        // //this.leftBackward.pwmWrite(this.drivingSpeed);
+        // this.rightForward.pwmWrite(0);
+        // this.rightBackward.pwmWrite(250);
+        //
+        // this.currentThrottle = this.drivingSpeed;
+        // this.currentDirection = 'backwards';
     }
 
     stop() {
@@ -78,7 +83,9 @@ class Rover {
     getControl() {
         return {
             throttle: this.currentThrottle,
-            direction: this.currentDirection
+            direction: this.currentDirection,
+            drivingSpeed: this.drivingSpeed,
+            turningSpeed: this.turningSpeed
         }
     }
 }

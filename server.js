@@ -40,6 +40,10 @@ const data = {
         y: 0,
         z: 0
     },
+    speed: {
+        turning: 170,
+        driving: 200
+    },
     magneticFieldStrength: 0,
     wantedMagneticFieldStrength: 800,
     drivingSpeed: 0,
@@ -101,7 +105,7 @@ function killGpios() {
 //killGpios();
 
 // initialize helpers
-var rover = new RoverSkeleton();
+var rover = new RoverSkeleton(data.turningSpeed, data.drivingSpeed);
 var compass = new Compass(1);
 var gpsTracker = new GPS();
 const navigator = new Navigator();
@@ -123,6 +127,9 @@ async function go() {
     var lastTurningDirection = 'right';
 
     while (true) {
+        // update speed values
+        rover.setSpeeds(data.speed.turning, data.speed.driving);
+
         // magnetic field strength
         compass.getRawValues(function (err, vals) {
             data.magneticValues = vals;
@@ -295,7 +302,15 @@ app.get('/ticks/:forward/:left/:right', function(req, res) {
     data.ticks.right = parseInt(req.params.right, 10);
 
     res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({message: 'Ticks set', strength: data.wantedMagneticFieldStrength}));
+    res.end(JSON.stringify({message: 'Ticks set'}));
+})
+
+app.get('/speeds/:turning/:driving', function(req, res) {
+    data.speed.turning = parseInt(req.params.turning, 10);
+    data.speed.driving = parseInt(req.params.driving, 10);
+
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({message: 'Speeds set ...'}));
 })
 
 /**
