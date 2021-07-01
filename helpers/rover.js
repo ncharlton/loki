@@ -1,4 +1,4 @@
-import { Gpio } from 'pigpio';
+import pigpio, { Gpio } from 'pigpio';
 const DRIVING_SPEED = 170;
 const TURNING_SPEED = 200;
 const STOP_SPEED = 0;
@@ -6,6 +6,7 @@ const STOP_SPEED = 0;
 class Rover {
     constructor() {
         this.drivingSpeed = 0;
+        pigpio.terminate();
         this.leftForward = new Gpio(26, { mode: Gpio.OUTPUT });
         this.leftBackward = new Gpio(13, { mode: Gpio.OUTPUT });
         this.rightForward = new Gpio(27, { mode: Gpio.OUTPUT });

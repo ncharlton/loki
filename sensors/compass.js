@@ -138,7 +138,6 @@ Compass.prototype.getRawValues = function (callback) {
     }
 
     function i2cCallback (err) {
-
         if (err) {
             if (callback) {
                 callback(err);

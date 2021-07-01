@@ -1,0 +1,182 @@
+<html>
+<head>
+        <style>
+            body {
+                font-family: Arial;
+            }
+
+            button {
+                margin: 5px;
+                padding: 5px;
+                border: 1px solid grey;
+            }
+
+            .shutdown {
+                background: red;
+                color: white;
+            }
+
+            fieldset {
+                padding: 15px;
+                max-width: 300px;
+                margin: 20px;
+            }
+
+            fieldset legend {
+                font-size: 14px;
+            }
+
+            #output {
+                background: #333;
+                padding: 15px;
+                max-width: 500px;
+                color: white;
+                font-size: 12px;
+                font-family: "Source Code Pro";
+            }
+
+            #rover-data p {
+                margin: 5px;
+                font-size: 12px;
+            }
+        </style>
+
+        <script
+            src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+            crossorigin="anonymous"></script>
+
+        <script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+
+        <script type="text/javascript">
+            function changeOutput(message) {
+                $("#output").html(message);
+            }
+
+            function getData() {
+                $.ajax({
+                    type: 'GET',
+                    url: '/',
+                    data: $(this).serialize(),
+                    dataType: 'json',
+                    success: function (data) {
+                        var passData = data;
+
+                        $("#rover-data").empty();
+                        $("#rover-data").html($("#dataTemplate").tmpl(passData));
+                    },
+                    complete: function (data) {
+                        setTimeout(getData, 1000);
+                    }
+                });
+            }
+            setTimeout(getData, 1000);
+
+            $(document).ready(function() {
+                console.log("ready");
+
+
+                $("#start").click(function() {
+                    $.get('/start', function (data) {
+                        changeOutput(data.message);
+                    })
+                });
+
+                $("#stop").click(function() {
+                    $.get('/stop', function (data) {
+                        changeOutput(data.message);
+                    })
+                });
+
+                $("#shutdown").click(function() {
+                    $.get('/shutdown', function (data) {
+                        changeOutput(data.message);
+                    })
+                });
+
+                $("#mode").click(function() {
+                    console.log("mode");
+                    $.get('/mode', function (data) {
+                        changeOutput(data.message);
+                    })
+                });
+
+                $("#magnet").click(function() {
+                    var magnetValue = $("#magnet-value").val();
+                    if (magnetValue > 0) {
+                        $.get('/magnet/' + magnetValue, function (data) {
+                            changeOutput(data.message);
+                        })
+                    }
+                });
+
+                $("#ticks").click(function() {
+                    var ticksForward = $("#ticks-forward").val();
+                    var ticksLeft = $("#ticks-left").val();
+                    var ticksRight = $("#ticks-right").val();
+
+                    $.get('/ticks/' + ticksForward + '/' + ticksLeft + '/' + ticksRight, function (data) {
+                        changeOutput(data.message);
+                    })
+                });
+            })
+        </script>
+    </head>
+    <body>
+        <p>Rover control</p>
+        <fieldset>
+            <legend>Rover control</legend>
+            <div>
+                <button id="mode">Switch mode</button>
+            </div>
+            <div>
+                <input id="magnet-value" value="800" type="text"><button id="magnet">Set magnet strength</button>
+            </div>
+            <div>
+                Forward: <input id="ticks-forward" value="30" type="text"> <br>
+                Left: <input id="ticks-left" value="10" type="text"> <br>
+                Right: <input id="ticks-right" value="10" type="text"> <br>
+
+                <button id="ticks">Set ticks</button>
+            </div>
+            <div>
+                <button id="start">Start</button>
+                <button id="stop">Stop</button>
+                <button id="shutdown" class="shutdown">Shutdown</button>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Rover output</legend>
+            <div id="output"></div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Rover data</legend>
+            <script id="dataTemplate" type="text/x-jquery-tmpl">
+                <p>Source location: Lat: ${locations.source.lat} Lng: ${locations.source.lng}</p>
+                <p>Current location: Lat: ${locations.current.lat} Lng: ${locations.current.lng}</p>
+                <p>Target location: Lat: ${locations.target.lat} Lng: ${locations.target.lng}</p>
+                <p>Heading: ${heading}</p>
+                <p>Magnetic Values:</p>
+                <p>X: ${magneticValues.x}</p>
+                <p>Y: ${magneticValues.y}</p>
+                <p>Z: ${magneticValues.z}</p>
+                <p>Magnetic field strengh: ${magneticFieldStrength}</p>
+                <p>Wanted magnetic field strengh: ${wantedMagneticFieldStrength}</p>
+                <p>Driving speed: ${drivingSpeed}</p>
+                <p>Turning speed: ${turningSpeed}</p>
+                <p>Mode: ${mode}</p>
+                <p>Drive: ${drive}</p>
+                <p>Ticks:</p>
+                <p>Forward: ${ticks.forward}</p>
+                <p>Left: ${ticks.left}</p>
+                <p>Right: ${ticks.right}</p>
+            </script>
+            <div id="rover-data" class="prettyprint"></div>
+        </fieldset>
+    </body>
+</html>
+

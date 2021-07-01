@@ -41,15 +41,13 @@ class Gps {
                 if (packet.sentenceId === "GGA" && packet.fixType !== "none") {
                     this.lat = packet.latitude;
                     this.lng = packet.longitude;
-
-                    parser.destroy();
                 }
             } catch (error) {}
         });
+    }
 
-        this.parser.on("close", err => {
-            console.log("Destroyed");
-        })
+    close() {
+        this.parser.destroy();
     }
 
     /**
